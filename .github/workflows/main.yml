@@ -2,6 +2,16 @@ name: Download Offline Packages
 
 on:
   workflow_dispatch:
+    inputs:
+      python_version:
+        description: 3.12
+        required: true
+        default: '3.13'
+        type: choice
+        options:
+          - '3.11'
+          - '3.12'
+          - '3.13'
 
 jobs:
   download:
@@ -11,15 +21,26 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.12'
+        python-version: ${{ inputs.python_version }}
 
     - name: Download Packages
+      shell: pwsh
       run: |
+        $pyVersion = "${{ inputs.python_version }}".Replace(".", "")
+        Write-Host "Downloading packages for Python 3.$pyVersion on Windows 64-bit..."
+        
         mkdir offline_packages
-        pip download ipykernel --platform win_amd64 --python-version 312 --abi cp312 -d offline_packages
+        
+        # استفاده از سویچ --only-binary=:all: برای جلوگیری از ارور کراس‌پلتفرم
+        pip download ipykernel `
+          --platform win_amd64 `
+          --python-version $pyVersion `
+          --abi cp$pyVersion `
+          --only-binary=:all: `
+          -d offline_packages
 
-    - name: Upload Zip
+    - name: Upload Zip Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: python313_offline_ipykernel
+        name: python${{ inputs.python_version }}_offline_packages
         path: offline_packages/
