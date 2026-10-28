@@ -32,7 +32,7 @@ jobs:
         mkdir offline_packages
         
         # استفاده از سویچ --only-binary=:all: برای جلوگیری از ارور کراس‌پلتفرم
-        pip download ipykernel `
+        pip download notebook `
           --platform win_amd64 `
           --python-version $pyVersion `
           --abi cp$pyVersion `
