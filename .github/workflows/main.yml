@@ -1,0 +1,25 @@
+name: Download Offline Packages
+
+on:
+  workflow_dispatch:
+
+jobs:
+  download:
+    runs-on: windows-latest
+
+    steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Download Packages
+      run: |
+        mkdir offline_packages
+        pip download ipykernel --platform win_amd64 --python-version 312 --abi cp312 -d offline_packages
+
+    - name: Upload Zip
+      uses: actions/upload-artifact@v4
+      with:
+        name: python313_offline_ipykernel
+        path: offline_packages/
